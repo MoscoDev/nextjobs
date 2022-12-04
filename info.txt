@@ -1,0 +1,1 @@
+Check out the bootstrap-express-api-app CLI README here: https://github.com/IamGideonIdoko/bootstrap-express-api-app#readme
