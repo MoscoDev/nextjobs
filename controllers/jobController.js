@@ -1,11 +1,11 @@
-const BlogPost = require('../models/BlogPost');
+const Job = require('../models/Job');
 
 
 /*
 @description 	Get all available blog posts.
 */
-exports.fetchAllBlogPosts = (req, res) => {
-	BlogPost.find()
+exports.fetchAllJobs = (req, res) => {
+	Job.find()
 			.sort({ created_at: -1 }) 
 			.then(posts => res.json(posts))
 			.catch(err => console.log(err));
@@ -15,7 +15,7 @@ exports.fetchAllBlogPosts = (req, res) => {
 /*
 @description 	Create a new blog post.
 */
-exports.createBlogPost = (req, res) => {
+exports.createJob = (req, res) => {
 	const { 
 		title,
 		body,
@@ -26,7 +26,7 @@ exports.createBlogPost = (req, res) => {
 		return res.status(400).json({ message: "The 'title' and 'body' are required." });
 	}
 
-	BlogPost.findOne({ title })
+	Job.findOne({ title })
 		.then(post => {
 			if(post) {
 				return res.status(400).json({ 
@@ -34,13 +34,13 @@ exports.createBlogPost = (req, res) => {
 				});
 			} else {
                 //create a new blog post from the model
-                const newBlogPost = new BlogPost({
+                const newJob = new Job({
                     title,
                     body
                 });
 
                 //add new user to the db
-                newBlogPost.save()
+                newJob.save()
                     .then(newPost => res.json(newPost));
 			}
 		});
@@ -52,7 +52,7 @@ exports.createBlogPost = (req, res) => {
 */
 exports.deleteOnePost = (req, res) => {
 	const { id } = req.params;
-	BlogPost.findById(id)
+	Job.findById(id)
 		.then(post => post.remove().then(() => res.json({success: true})))
 		.catch(err => res.status(404).json({success: false}));
 };
@@ -63,7 +63,7 @@ exports.deleteOnePost = (req, res) => {
 */
 exports.updateOnePost = (req, res) => {
 	const { id } = req.params;
-	BlogPost.findByIdAndUpdate(id, req.body, { new: true }, (err, data) => {
+	Job.findByIdAndUpdate(id, req.body, { new: true }, (err, data) => {
 		if (err) {
 			return res.status(404).json({success: false});
 		}
