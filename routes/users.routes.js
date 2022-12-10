@@ -1,13 +1,36 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const userController = require('../controllers/userController');
+const { restrictAccessTo, auth } = require("../middleware/auth");
+const {
+  getAllUsers,
+  getUsersByID,
+  updateUser,
+} = require("../controllers/userController");
 
 /*
-@route          POST api/users
-@description    Register a new user.
+@route          GET api/users
+@description    get user.
 @access         Public
 */
-// router.post('/', userController.registerNewUser);
+router.get("/", auth, restrictAccessTo("superAdmin"), getAllUsers);
 
+/*
+@route          GET api/users/:userID
+@description    get user.
+@access         Public
+*/
+router.get("/:userID", getUsersByID);
+
+/*
+@route          PUT api/users/:userID
+@description    get user.
+@access         Public
+*/
+router.put(
+  "/:userID",
+  auth,
+  restrictAccessTo(["user", "superAdmin"]),
+  updateUser
+);
 
 module.exports = router;

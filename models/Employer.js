@@ -1,4 +1,6 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const Organization = require("./Organization");
+// const Organization =
 const {Schema} = mongoose
 
 const EmployerSchema = new Schema({
@@ -31,10 +33,11 @@ const EmployerSchema = new Schema({
     role: {
       type: String,
       default: "employer",
+      immutable: true
     },
     organization: {
       type:mongoose.Schema.Types.ObjectId,
-      ref: "Orgnization"
+      ref: Organization
     },
   },
   { timestamps: true }
@@ -42,4 +45,4 @@ const EmployerSchema = new Schema({
 
 
 const Employer = mongoose.model("employer", EmployerSchema)
-module.exports = Employer
+module.exports = {Employer}

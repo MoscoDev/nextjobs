@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
+const {auth} = require('../middleware/auth');
 const authController = require('../controllers/authController');
 
 
 /*
-@route 			POST /api/auth
+@route 			POST /api/auth/login
 @description 	authenticate the user.
 @access 		Public
 */
 router.post('/login', authController.authenticateUser);
+
 
 /*
 @route 			POST /api/auth/signup
@@ -18,12 +19,6 @@ router.post('/login', authController.authenticateUser);
 */
 router.post("/signup", authController.registerNewUser);
 
-/*
-@route 			POST /api/auth/employer/signup
-@description 	authenticate the user.
-@acces
-*/
-router.post("/employer/signup", authController.registerNewEmployer)
 
 
 /*
@@ -35,12 +30,29 @@ router.get("/verify/:id", authController.verifyUser)
 
 
 /*
+@route 			POST /api/auth/employer/signup
+@description 	authenticate the user.
+@acces
+*/
+router.post("/employer/signup", authController.registerNewEmployer)
+
+
+
+/*
+@route 			POST /api/auth/employer/login
+@description 	authenticate the employer.
+@access 		Public
+*/
+router.post('/employer/login', authController.authenticateEmployer);
+
+
+/*
 @route 			POST /api/auth/employer/verify
 @description 	authenticate the user.
 @acces
 */
 
-router.get("/employer/verify/:id", authController.verifyUser);
+router.get("/employer/verify/:employerID", authController.verifyEmployer);
 
 
 /*

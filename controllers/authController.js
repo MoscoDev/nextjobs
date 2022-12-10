@@ -4,7 +4,8 @@ const jwt = require("jsonwebtoken");
 const { response } = require("../utils/response");
 const { Validation } = require("../utils/validation");
 const sendEmail = require("../utils/emails/email");
-const Employer = require("../models/Employer");
+const {Employer} = require("../models/Employer");
+const Organization = require("../models/Organization");
 
 /*
 @description authenticate the user.
@@ -18,52 +19,87 @@ exports.authenticateUser = (req, res) => {
   }
 
   // check for existing user with username
-  User.findOne({ email }).then((user) => {
-    console.log(user)
+  User.findOne({ email }).select("+password").then((user) => {
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials." });
     } else {
       // validate password
+      
       bcrypt.compare(password, user.password).then((isMatch) => {
         if (!isMatch)
           return res.status(400).json({ message: "Invalid credentials." });
-        const { _id, email, role, isVerified } = user;
+        
+        const { _id, role, isVerified } = user;
         const verificationLink = `${req.protocol}://${req.get(
           "host"
         )}/api/v1/auth/verify/${_id}`;
-        if (!isVerified)
+       
+        if (!isVerified){
           return res
             .status(422)
             .json(
               response(
                 { err: "please verify this email: " + verificationLink },
-                error
+                true
               )
-            );
-        jwt.sign(
-          { _id }, // signs the user id as payload
-          process.env.JWT_SECRET, // jwt secret
-          { expiresIn: 21600 }, // token to expire in 5 or 6 hrs
-          (err, token) => {
-            // callback
-            if (err) throw err;
-            res.json(
-              response({
-                token,
-                user: {
-                  _id,
-                  role,
-                  created_at,
-                  isVerified,
-                },
-              })
-            );
-          }
-        );
+            )}
+      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: (process.env.TOKEN_EXPIRATION_TIME),
+      });
+      res.header("auth-token", token).send({ token });
       });
     }
   });
 };
+
+
+/*
+@description authenticate the employer.
+*/
+exports.authenticateEmployer = (req, res) => {
+  const { email, password } = req.body;
+
+  // validate
+  if (!email || !password) {
+    return res.status(400).json({ message: "Please, enter all fields." });
+  }
+
+  // check for existing employer with email
+  Employer.findOne({ email }).select("+password").then((employer) => {
+    if (!employer) {
+      return res.status(401).json({ message: "Invalid credentials." });
+    } else {
+      // validate password
+      
+      bcrypt.compare(password, employer.password).then((isMatch) => {
+        if (!isMatch)
+          return res.status(400).json({ message: "Invalid credentials." });
+        
+        const { _id, role, isVerified } = employer;
+        const verificationLink = `${req.protocol}://${req.get(
+          "host"
+        )}/api/v1/auth/employer/verify/${_id}`;
+       
+        if (!isVerified){
+          return res
+            .status(422)
+            .json(
+              response(
+                { err: "please verify this email: " + verificationLink },
+                true
+              )
+            )}
+      const token = jwt.sign({ _id: employer._id }, process.env.JWT_SECRET, {
+        expiresIn: (process.env.TOKEN_EXPIRATION_TIME),
+      });
+      res.header("auth-token", token).send({ token });
+      });
+    }
+  });
+};
+
+
+
 
 /*
 @description register the user as an applicant.
@@ -138,10 +174,13 @@ exports.registerNewEmployer = async (req, res) => {
       tel,
       password,
       organizationName,
-      organizationEmail,
+      organizationTel,
       size,
       country,
+      website,
       state,
+      role,
+      about,logo
     } = req.body;
 
     // validate reqBody
@@ -151,10 +190,12 @@ exports.registerNewEmployer = async (req, res) => {
       email,
       password,
       organizationName,
-      organizationEmail,
       size,
       country,
+      logo,
+      website,
       state,
+      
     });
     if (error)
       return res
@@ -166,48 +207,47 @@ exports.registerNewEmployer = async (req, res) => {
     // check for duplicate in employer and Organization DB
 
     const employerExist = await Employer.findOne({ email });
-    const organizationExist = await Organization.findOne({
-      name: organizationName,
+     if (employerExist)
+       return res
+         .status(409)
+         .send(response({ error: true, message: "Email already exist" }, true));
+    let organizationExist = await Organization.findOne({
+      name:organizationName
     });
-    if (employerExist)
-      return res
-        .status(409)
-        .send(response({ error: true, message: "Email already exist" }, true));
-    if (organizationExist)
-      return res
-        .status(409)
-        .send(
-          response(
-            { error: true, message: "This organization already exist" },
-            true
-          )
-        );
+   
+    if (!organizationExist){
+       const sizeOptions = ["1 - 10", "11 - 100", "above 100"];
+
+       size =
+         size <= 10
+           ? sizeOptions[0]
+           : size > 10 && size <= 100
+           ? sizeOptions[1]
+           : sizeOptions[2];
+       organizationExist = await Organization.create({
+         name: organizationName,
+         tel: organizationTel,
+         location: { country, state },
+         size,
+         logo,
+         about,
+         website,
+       });
+    }
+      
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
-    const sizeOptions = ["1 - 10", "11 - 100", "above 100"];
-
-    size =
-      size <= 10
-        ? sizeOptions[0]
-        : size > 10 && size <= 100
-        ? sizeOptions[1]
-        : sizeOptions[2];
-    const newOrganization = await Organization.create({
-      name: organizationName,
-      email: organizationEmail,
-      location: { country, state },
-      size,
-      tel,
-    });
+   
     // create the Employer Entity
     const employer = new Employer({
       firstName,
       lastName,
       email,
       tel,
+      role,
       password: hashedPassword,
-      organization: newOrganization._id,
+      organization: organizationExist._id,
     });
 
     const savedEmployer = await employer.save();
@@ -222,7 +262,7 @@ exports.registerNewEmployer = async (req, res) => {
       type: "employerVerification",
       subject: "Employer Account Verification",
       email,
-      organization: newOrganization.name,
+      organization: organizationExist.name,
     });
     res.status(200).send(
       response(
@@ -265,7 +305,7 @@ exports.verifyUser = async (req, res) => {
         .send(response({ err: "this user account does not exist" }));
     return res
       .status(200)
-      .send(response({ email: verifyUser.email, _id: verifyUser._id }));
+      .send(response({ email: verifyUser.email, _id: verifyUser._id , message: "verification successful"}));
   } catch (error) {
     return res.status(500).send(response({ err: error.message }));
   }
@@ -276,9 +316,10 @@ exports.verifyUser = async (req, res) => {
 */
 exports.verifyEmployer = async (req, res) => {
   try {
-    const _id = req.params.id;
+    const {employerID} = req.params;
+    console.log(employerID)
     const verifyEmployer = await Employer.findByIdAndUpdate(
-      _id,
+      employerID,
       { isVerified: true },
       { new: true }
     );
@@ -293,3 +334,6 @@ exports.verifyEmployer = async (req, res) => {
     return res.status(500).send(response({ err: error.message }));
   }
 };
+
+/* @description 	restrict access to */
+

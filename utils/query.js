@@ -18,7 +18,7 @@ class QueryMethod {
     if (this.queryString.fields) {
       const requestedFields = this.queryString.fields.split(",").join(" ");
       this.query = this.query.select(requestedFields);
-    } else {
+    } else {  
       this.query = this.query.select("-__v");
     }
     return this;

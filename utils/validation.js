@@ -7,11 +7,13 @@ const Validation = (data) => {
     password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
     repeat_password: Joi.ref("password"),
     organizationName: Joi.string().min(2).max(30),
+    website: Joi.string().min(2),
     size: Joi.number().greater(1),
     organizationEmail: Joi.string().email({
       minDomainSegments: 2,
     }),
     country: Joi.string().min(2).max(30),
+    logo: Joi.string().min(2),
     state: Joi.string().min(2).max(30),
     email: Joi.string().email({
       minDomainSegments: 2,

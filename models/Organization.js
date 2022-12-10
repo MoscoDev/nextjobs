@@ -1,5 +1,5 @@
-const mongoose = require("mongoose")
-const {Schema} = mongoose
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
 const OrganizationSchema = new Schema({
   name: {
@@ -7,19 +7,18 @@ const OrganizationSchema = new Schema({
     required: true,
     unique: [true, "there is a"],
   },
-  email: {
+  website: {
     type: String,
-    required: true,
-    unique: true,
   },
   tel: {
     type: String,
     required: true,
   },
-  about:{
+  logo: { type: String },
+  about: {
     type: String,
     min: 20,
-    max: 600
+    max: 600,
   },
   location: {
     country: {
@@ -71,12 +70,10 @@ const OrganizationSchema = new Schema({
   },
   size: {
     type: String,
+    default: "1 - 10",
     enum: ["1 - 10", "11 - 100", "above 100"],
-    default: ["1 - 10"],
   },
 });
-
-
 
 const Organization = mongoose.model("organization", OrganizationSchema);
 module.exports = Organization;

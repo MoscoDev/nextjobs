@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../middleware/auth");
+const {auth, authEmployer, restrictAccessTo} = require("../middleware/auth");
 const JobController = require("../controllers/jobController");
 
 /*
@@ -10,25 +10,38 @@ const JobController = require("../controllers/jobController");
 */
 router.get("/", JobController.fetchAllJobs);
 
+
+/*
+@route 			GET api/jobs/:jobID
+@description 	Get all available blog posts.
+@access 		Public.
+*/
+router.get("/:jobID", JobController.fetchAJob);
+
 /*
 @route 			POST api/jobs
 @description 	Create a new blog post.
 @access 		Private (auth needed).
 */
-router.post("/", auth, JobController.createJob);
+router.post(
+  "/",
+  authEmployer,
+  restrictAccessTo(["employer", "superAdmin"]),
+  JobController.createJob
+);
 
 /*
-@route 			DELETE api/jobs/:id
+@route 			DELETE api/jobs/:jobID
 @description 	Delete a single blog post with given id.
 @access 		Private (auth needed).
 */
-router.delete("/:id", auth, JobController.deleteOnePost);
+router.delete("/:jobID", authEmployer, restrictAccessTo(["employer", "superAdmin"]), JobController.deleteOneJob);
 
 /*
-@route 			PUT api/jobs/:id
-@description 	update a single blog post with given id.
+@route 			PUT api/jobs/:jobID
+@description 	update a single blog post with given jobID.
 @access 		Private (auth needed).
 */
-router.put("/:id", auth, JobController.updateOnePost);
+router.put("/:jobID", authEmployer, restrictAccessTo(["employer", "superAdmin"]), JobController.updateOneJob);
 
 module.exports = router;

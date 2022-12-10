@@ -4,11 +4,16 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 require('dotenv').config();
+const nodeCron = require("node-cron");
 // routes
 const usersRoute = require("./routes/users.routes");
-const blogpostsRoute = require("./routes/job.routes");
+const jobsRoute = require("./routes/job.routes");
 const authRoute = require("./routes/auth.routes");
-const employerRoute = require("./routes/employers.routes")
+const industryRoute = require("./routes/industry.routes")
+const employerRoute = require("./routes/employers.routes");
+// const organizationRoute = require("./routes/employers.routes");
+
+const { ExpireAJob } = require("./controllers/jobController");
 
 // mongoDB connection string.
 const db = process.env.MONGODB_URI;
@@ -57,8 +62,11 @@ mongoose
 @description    Use route.
 */
 app.use("/api/v1/users", usersRoute);
-app.use("/api/v1/blogposts", blogpostsRoute);
+app.use("/api/v1/jobs", jobsRoute);
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/industries", industryRoute);
+// app.use("/api/v1/organizations", organizationRoute);
+
 app.use("/api/v1/employers", employerRoute);
 
 app.get("/", (req, res) => {
@@ -67,6 +75,12 @@ app.get("/", (req, res) => {
     description:
       "A job listing application for both job seekers and employers. We're the link to your next jobs and employmenet",
   });
+});
+
+
+nodeCron.schedule("0 0 0 * * *", () => {
+  ExpireAJob();
+  console.log(new Date().toLocaleString());
 });
 
 const port = process.env.PORT || 5000;

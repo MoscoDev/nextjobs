@@ -88,6 +88,7 @@ const UserSchema = new Schema(
     role: {
       type: String,
       default: "applicant",
+      immutable: true
     },
   },
   { timestamps: true }
