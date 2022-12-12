@@ -12,8 +12,13 @@ const ApplicationSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Job",
     },
+    employer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Employer",
+    },
     status: {
       type: String,
+      default: "applied",
       enum: ["applied", "shortlisted", "rejected"],
     },
     resume: {
@@ -28,8 +33,7 @@ const ApplicationSchema = new Schema(
   { timestamps: true }
 );
 
-
 // Create BlogPost model.
-const Job = mongoose.model("application", ApplicationSchema);
+const Application = mongoose.model("application", ApplicationSchema);
 
-module.exports = Job;
+module.exports = Application;

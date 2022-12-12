@@ -82,9 +82,6 @@ const UserSchema = new Schema(
     resume: {
       type: String,
     },
-    coverLetter: {
-      type: String,
-    },
     role: {
       type: String,
       default: "applicant",

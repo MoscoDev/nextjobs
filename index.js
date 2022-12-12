@@ -11,7 +11,7 @@ const jobsRoute = require("./routes/job.routes");
 const authRoute = require("./routes/auth.routes");
 const industryRoute = require("./routes/industry.routes")
 const employerRoute = require("./routes/employers.routes");
-// const organizationRoute = require("./routes/employers.routes");
+const applicationRoute = require("./routes/application.routes");
 
 const { ExpireAJob } = require("./controllers/jobController");
 
@@ -65,7 +65,7 @@ app.use("/api/v1/users", usersRoute);
 app.use("/api/v1/jobs", jobsRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/industries", industryRoute);
-// app.use("/api/v1/organizations", organizationRoute);
+app.use("/api/v1/applications", applicationRoute);
 
 app.use("/api/v1/employers", employerRoute);
 
