@@ -1,6 +1,5 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
-
 
 // Define User schema.
 const UserSchema = new Schema(
@@ -85,14 +84,27 @@ const UserSchema = new Schema(
     role: {
       type: String,
       default: "applicant",
-      immutable: true
+      immutable: true,
     },
+    experiences: [
+      {
+        jobTitle: {
+          type: String,
+        },
+        description: {
+          type: String,
+        },
+        duration: {
+          type: Number,
+        },
+      },
+    ],
+    skills: [{ type: String }],
   },
   { timestamps: true }
 );
 
 // Create User model.
-const User = mongoose.model('User', UserSchema);
-
+const User = mongoose.model("User", UserSchema);
 
 module.exports = User;

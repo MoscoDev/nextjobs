@@ -10,7 +10,7 @@ exports.getAllUsers = async (req, res) => {
       .filter()
       .limit()
       .paginate();
-    const allUsers = await User.userQueries;
+    const allUsers = await userQueries.query;
     res.status(200).send(response({ allUsers }, false));
   } catch (error) {
     res.status(500).send(response({ err: error.message }, error));
@@ -23,11 +23,9 @@ exports.getUsersByID = async (req, res) => {
     const user = await User.findById(userID);
 
     if (!user) {
-      return res
-        .status(404)
-        .send(response({ err: "user not found" }, true));
+      return res.status(404).send(response({ err: "user not found" }, true));
     }
-    res.status(200).send(response({ user }, false));
+    res.status(200).send(response(user, false));
   } catch (error) {
     res.status(500).send(response({ err: error.message }, error));
   }
@@ -35,30 +33,30 @@ exports.getUsersByID = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    let userID =
-      req.user.role === "user" ? req.user._id : req.params.id;
-    const update = req.body;
+    let userID = req.user.role === "applicant" ? req.user._id : req.params.id;
+    const update = ({firstName,lastName,email,tel,location,state,experiences,skills,} = req.body);
+   
+
     const user = await User.findByIdAndUpdate(userID, update, {
       new: true,
     });
 
     if (!user) {
-      return res
-        .status(404)
-        .send(response({ err: "user not found" }, true));
+      return res.status(404).send(response({ err: "user not found" }, true));
     }
-    res.status(200).send(response({ user }, false));
+    res.status(200).send(response(user, false));
   } catch (error) {
+    console.log(error);
     res.status(500).send(response({ err: error.message }, error));
   }
 };
 
 exports.deleteUser = async (req, res) => {
   try {
-    let userID =
-      req.user.role === "user" ? req.user._id : req.params.id;
+    let userID = req.user.role === "user" ? req.user._id : req.params.id;
     const deletedUser = await User.findByIdAndDelete(userID);
-    if (!deletedUser) return res.status(400).send(response("cannot delete invalid user",true));
+    if (!deletedUser)
+      return res.status(400).send(response("cannot delete invalid user", true));
     res.status(200).send(response("account deleted successfully", true));
   } catch (error) {
     res.status(500).send(response(error.message, true));

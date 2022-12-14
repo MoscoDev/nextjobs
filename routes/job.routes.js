@@ -10,6 +10,13 @@ const JobController = require("../controllers/jobController");
 */
 router.get("/", JobController.fetchAllJobs);
 
+/*
+@route 			GET api/jobs/recommendation
+@description 	Get recommended jobs based on keywords.
+@access 		Private (auth needed).
+*/
+router.get("/recommendations", auth, JobController.RecommendJobs);
+
 
 /*
 @route 			GET api/jobs/:jobID
@@ -43,5 +50,6 @@ router.delete("/:jobID", authEmployer, restrictAccessTo(["employer", "superAdmin
 @access 		Private (auth needed).
 */
 router.put("/:jobID", authEmployer, restrictAccessTo(["employer", "superAdmin"]), JobController.updateOneJob);
+
 
 module.exports = router;

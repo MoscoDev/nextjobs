@@ -1,5 +1,5 @@
 const { default: mongoose } = require("mongoose");
-const { Industry } = require("../models/industry");
+const { Industry } = require("../models/Industry");
 const { response } = require("../utils/response");
 
 exports.createIndustry = async (req, res) => {

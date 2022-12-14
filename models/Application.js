@@ -1,4 +1,7 @@
 const mongoose = require("mongoose");
+const { Employer } = require("./Employer");
+const Job = require("./Job");
+const User = require("./User");
 const { Schema } = mongoose;
 
 // Define Job schema.
@@ -6,15 +9,15 @@ const ApplicationSchema = new Schema(
   {
     applicant: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: User,
     },
     job: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Job",
+      ref: Job,
     },
     employer: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Employer",
+      ref: Employer,
     },
     status: {
       type: String,
@@ -23,11 +26,11 @@ const ApplicationSchema = new Schema(
     },
     resume: {
       type: String,
-      required: "false",
+      
     },
     coverLetter: {
       type: String,
-      required: "false",
+        
     },
   },
   { timestamps: true }

@@ -12,6 +12,6 @@ const IndustrySchema = new Schema({
         require:true
     }
     
-},{_id: false, timestamps:true})
+},{timestamps:true})
 const Industry = mongoose.model("industry", IndustrySchema)
 module.exports = {Industry}

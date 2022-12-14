@@ -1,40 +1,45 @@
 const uploader = require("../utils/uploads/multer");
 const express = require("express");
 const router = express.Router();
-const { restrictAccessTo, authEmployer } = require("../middleware/auth");
-const {createApplication
+const { restrictAccessTo, authEmployer, auth } = require("../middleware/auth");
+const {createApplication, updateApplication, getJobApplicationById, getAllJobApplicationsForAJob
 } = require("../controllers/applicationController");
 
 /*
-@route          GET api/employers
-@description    get employer.
-@access         Public
+@route          GET api/v1/:jobID
+@description    get application.
+@access         Private (employer)
 */
-// router.get("/", getAllEmployer);
+router.get("/:jobID",authEmployer, getAllJobApplicationsForAJob);
+
+/*
+@route          GET api/v1/applications/:applicationID
+@description    get application.
+@access         Private (user/applicant, employer)
+*/
+router.get("/application/:applicationID",auth||authEmployer, getJobApplicationById);
 
 // /*
-// @route          GET api/employers/:employerID
-// @description    get employer.
-// @access         Public
+// @route          PUT api/v1/applications/:applicationID
+// @description    get application.
+// @access         Private (employer)
 // */
-// router.get("/:employerID", getEmployerByID);
-
-// /*
-// @route          PUT api/employers/:employerID
-// @description    get employer.
-// @access         Public
-// */
-// router.put(
-//   "/:employerID",
-//   authEmployer,
-//   restrictAccessTo(["employer", "superAdmin"]),
-//   UpdateEmployer
-// );
-
-router.post(
-  "/",
+router.put(
+  "/:applicationID",
   authEmployer,
   restrictAccessTo(["employer", "superAdmin"]),
+  updateApplication
+);
+
+/*
+// @route          POST api/v1/applications/
+// @description    get application.
+// @access         Private (user/applicant)
+// */
+router.post(
+  "/",
+  auth,
+  restrictAccessTo(["applicant", "superAdmin"]),
   uploader.single("file"),
   createApplication
 );

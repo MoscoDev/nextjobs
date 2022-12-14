@@ -12,7 +12,7 @@ const {
 @description    get user.
 @access         Public
 */
-router.get("/", auth, restrictAccessTo("superAdmin"), getAllUsers);
+router.get("/", auth, restrictAccessTo(["superAdmin"]), getAllUsers);
 
 /*
 @route          GET api/users/:userID
@@ -29,7 +29,7 @@ router.get("/:userID", getUsersByID);
 router.put(
   "/:userID",
   auth,
-  restrictAccessTo(["user", "superAdmin"]),
+  restrictAccessTo(["applicant", "superAdmin"]),
   updateUser
 );
 

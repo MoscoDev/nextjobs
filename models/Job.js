@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { Employer } = require("./Employer");
-const { Industry } = require("./industry");
+const { Industry } = require("./Industry");
 const Organization = require("./Organization");
 const { Schema } = mongoose;
 
@@ -146,7 +146,7 @@ const JobSchema = new Schema(
   { timestamps: true }
 );
 function arrayLimit(val) {
-  return val.length <= 10;
+  return val.length <= 15;
 }
 
 JobSchema.pre("save", async function (next) {

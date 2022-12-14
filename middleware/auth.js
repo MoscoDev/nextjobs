@@ -15,7 +15,8 @@ exports.auth = async (req, res, next) => {
     //if there is a token, then verify
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     //add the user from payload
-    req.user = (await User.findById(decoded._id)) || next();
+    req.user = (await User.findById(decoded._id)) 
+    next();
   } catch (e) {
     res.status(400).json({ message: "Token is not valid." });
   }

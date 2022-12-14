@@ -8,6 +8,7 @@ const { response } = require("../utils/response");
 /*
 @description 	Get all available blog posts.
 */
+
 exports.fetchAllJobs = async (req, res) => {
   try {
     const jobQueries = new QueryMethod(
@@ -62,7 +63,6 @@ exports.createJob = async (req, res) => {
     });
     if (!organizationExist) {
       organizationExist = req.user.organization;
-      
     }
     let hiringFor = organization;
     const job = new Job({
@@ -87,7 +87,7 @@ exports.createJob = async (req, res) => {
 exports.deleteOneJob = async (req, res) => {
   try {
     let { jobID } = req.params;
-    const update = req.body;
+
     const role = req.user.role;
     const job =
       role === "employer"
@@ -129,6 +129,70 @@ exports.updateOneJob = async (req, res) => {
     }
     res.status(200).send(response({ job }, false));
   } catch (error) {
+    res.status(500).send(response({ err: error.message }, error));
+  }
+};
+
+/* 
+@description 	Update a jobs that expirydate has passed.
+*/
+exports.RecommendJobs = async (req, res) => {
+  try {
+    const userSkills = req.user.skills;
+    const userExperiences = req.user.experiences;
+    const jobTitle = userExperiences[0].jobTitle;
+    const yearsOfExperience = userExperiences.reduce(
+      (accumulator, currentValue) => accumulator + currentValue.duration,
+      0
+    );
+    console.log(yearsOfExperience);
+    Job.find(
+      {
+        isExpired: false,
+        seniority:
+          yearsOfExperience < 1
+            ? "entry" && "mid"
+            : yearsOfExperience >= 2
+            ? "senior"
+            : "mid",
+        $or: [
+          {
+            keywords: {
+              $regex: userSkills.join("|"),
+              $options: "i",
+            },
+          },
+          { title: { $regex: jobTitle, $options: "i" } },
+          {
+            description: {
+              $regex: userSkills.join("|"),
+              $options: "i",
+            },
+          },
+        ],
+      },
+      (err, docs) => {
+        if (err) {
+          // Handle error
+          console.log(err);
+          return res.status(404).send(response("job not found", true));
+        }
+
+        // Filter the documents to find those with at least 3 matches
+        docs.sort((a, b) => {
+          let matchesA = a.keywords.filter((val) =>
+            userSkills.includes(val)
+          ).length;
+          let matchesB = b.keywords.filter((val) =>
+            userSkills.includes(val)
+          ).length;
+          return matchesB - matchesA;
+        });
+        res.status(200).send(response(docs, false));
+      }
+    );
+  } catch (error) {
+    console.log(error);
     res.status(500).send(response({ err: error.message }, error));
   }
 };
