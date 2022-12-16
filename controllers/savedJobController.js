@@ -1,5 +1,5 @@
 const Job = require("../models/Job");
-const SavedJob = require("../models/savedJob");
+const SavedJob = require("../models/SavedJob");
 const QueryMethod = require("../utils/query");
 const { response } = require("../utils/response");
 
