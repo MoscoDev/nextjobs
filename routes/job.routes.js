@@ -12,10 +12,17 @@ router.get("/", JobController.fetchAllJobs);
 
 /*
 @route 			GET api/jobs/recommendation
-@description 	Get recommended jobs based on keywords.
+@description 	Get recommended jobs based on their skills and experience.
 @access 		Private (auth needed).
 */
 router.get("/recommendations", auth, JobController.RecommendJobs);
+
+/*
+@route 			GET api/search?searchTerm=
+@description 	Get recommended jobs based on  based on keywords, location, and job type.
+@access 		Private (auth needed).
+*/
+router.get("/search", JobController.SearchJobs);
 
 
 /*

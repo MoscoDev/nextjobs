@@ -197,6 +197,67 @@ exports.RecommendJobs = async (req, res) => {
   }
 };
 
+exports.SearchJobs = async (req, res) => {
+  try {
+    const {searchTerm} = req.query;
+   
+    Job.find(
+      {
+        isExpired: false,
+        $or: [
+          {
+            keywords: {
+              $regex: searchTerm,
+              $options: "i",
+            },
+          },
+          { title: { $regex: jobTitle, $options: "i" } },
+          {
+            description: {
+              $regex: searchTerm,
+              $options: "i",
+            },
+          },
+          {
+            location: {
+              $regex: searchTerm,
+              $options: "i",
+            },
+          },
+          {
+            jobType: {
+              $regex: searchTerm,
+              $options: "i",
+            },
+          },
+        ],
+      },
+      (err, docs) => {
+        if (err) {
+          // Handle error
+          console.log(err);
+          return res.status(404).send(response("job not found", true));
+        }
+
+        // Filter the documents to find those with at least 3 matches
+        docs.sort((a, b) => {
+          let matchesA = a.keywords.filter((val) =>
+            searchTerm.includes(val)
+          ).length;
+          let matchesB = b.keywords.filter((val) =>
+            searchTerm.includes(val)
+          ).length;
+          return matchesB - matchesA;
+        });
+        res.status(200).send(response(docs, false));
+      }
+    );
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(response({ err: error.message }, error));
+  }
+};
+
 /* 
 @description 	Update a jobs that expirydate has passed.
 */

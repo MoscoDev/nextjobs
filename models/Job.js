@@ -41,7 +41,7 @@ const JobSchema = new Schema(
       type: String,
       enum: ["full-time", "part-time", "contract", "internship"],
       required: true,
-      default: "fullTime",
+      default: "full-time",
     },
     seniority: {
       type: String,
@@ -150,12 +150,9 @@ function arrayLimit(val) {
 }
 
 JobSchema.pre("save", async function (next) {
-
-  this.expiresAt = +new Date() + (this.duration*7* 24 * 60 * 60 * 1000); 
+  this.expiresAt = +new Date() + this.duration * 7 * 24 * 60 * 60 * 1000;
   next();
 });
-
-
 
 // Create BlogPost model.
 const Job = mongoose.model("job", JobSchema);
