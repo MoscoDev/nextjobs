@@ -211,7 +211,7 @@ exports.SearchJobs = async (req, res) => {
               $options: "i",
             },
           },
-          { title: { $regex: jobTitle, $options: "i" } },
+          { title: { $regex: searchTerm, $options: "i" } },
           {
             description: {
               $regex: searchTerm,
