@@ -1,9 +1,12 @@
-require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+var morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 require('dotenv').config();
+var fs = require("fs");
+var morgan = require("morgan");
+var path = require("path");
 const nodeCron = require("node-cron");
 // routes
 const usersRoute = require("./routes/users.routes");
@@ -25,6 +28,15 @@ const app = express();
 // parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+
+
+// create a write stream (in append mode)
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+
+// setup the logger
+app.use(morgan('combined', { stream: accessLogStream }))
+
 
 /* 
 @description    For CORS (To allow for every request set `corsOption.origin` to true)

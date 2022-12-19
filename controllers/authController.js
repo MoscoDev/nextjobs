@@ -303,6 +303,10 @@ exports.verifyUser = async (req, res) => {
       return res
         .status(404)
         .send(response({ err: "this user account does not exist" }));
+    if (verifyUser.isVerified)
+          return res
+            .status(404)
+            .send(response({ err: "this user account does not exist" }));
     return res
       .status(200)
       .send(response({ email: verifyUser.email, _id: verifyUser._id , message: "verification successful"}));
