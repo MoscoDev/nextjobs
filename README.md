@@ -1,4 +1,4 @@
-# Job Listing and Recommendation Application
+# Job Listing and Recommendation Application(Nextjobs)
 
 A job listing and recommendation app that helps users find jobs based on their skills and experience.
 
