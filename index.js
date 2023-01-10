@@ -96,6 +96,11 @@ nodeCron.schedule("0 5 0 * * *", () => {
   console.log(new Date().toLocaleString());
 });
 
+nodeCron.schedule("*/5 * * * *", () => {
+ 
+  console.log(new Date().toLocaleString(), "keep alive");
+});
+
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => {
