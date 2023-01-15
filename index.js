@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 var morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
-require('dotenv').config();
+require("dotenv").config();
 var fs = require("fs");
 var morgan = require("morgan");
 var path = require("path");
@@ -12,7 +12,7 @@ const nodeCron = require("node-cron");
 const usersRoute = require("./routes/users.routes");
 const jobsRoute = require("./routes/job.routes");
 const authRoute = require("./routes/auth.routes");
-const industryRoute = require("./routes/industry.routes")
+const industryRoute = require("./routes/industry.routes");
 const employerRoute = require("./routes/employers.routes");
 const applicationRoute = require("./routes/application.routes");
 const savedJobRoute = require("./routes/savedJob.routes");
@@ -29,14 +29,13 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-
-
 // create a write stream (in append mode)
-var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+var accessLogStream = fs.createWriteStream(path.join(__dirname, "access.log"), {
+  flags: "a",
+});
 
 // setup the logger
-app.use(morgan('combined', { stream: accessLogStream }))
-
+app.use(morgan("combined", { stream: accessLogStream }));
 
 /* 
 @description    For CORS (To allow for every request set `corsOption.origin` to true)
@@ -90,15 +89,9 @@ app.get("/", (req, res) => {
   });
 });
 
-
 nodeCron.schedule("0 5 0 * * *", () => {
   ExpireAJob();
   console.log(new Date().toLocaleString());
-});
-
-nodeCron.schedule("*/5 * * * *", () => {
- 
-  console.log(new Date().toLocaleString(), "keep alive");
 });
 
 const port = process.env.PORT || 5000;
