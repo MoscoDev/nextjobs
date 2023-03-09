@@ -40,7 +40,7 @@ app.use(morgan("combined", { stream: accessLogStream }));
 /* 
 @description    For CORS (To allow for every request set `corsOption.origin` to true)
 */
-const allowlist = process.env.ALLOW_LIST.split(" ");
+const allowlist = ["http://localhost:5000", "http://localhost:5173", "https://nextjobb.onrender.com"];
 const corsOptionsDelegate = function (req, callback) {
   let corsOptions;
   if (allowlist.indexOf(req.header("Origin")) !== -1) {
